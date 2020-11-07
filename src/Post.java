@@ -1,4 +1,6 @@
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Post {
 	private final String id;
@@ -7,12 +9,12 @@ public class Post {
 	private final long timestamp;
 
 
-	public Post(String author, String text){
-		if(author == null){
-			throw new IllegalArgumentException("Called Post constructor with null author");
+	public Post(String author, String text) throws InvalidUsernameException, InvalidPostTextException {
+		if(author == null || author.length() < 1){
+			throw new InvalidUsernameException("Called Post constructor with null/empty author");
 		}
-		if(text == null){
-			throw new IllegalArgumentException("Called Post constructor with null text");
+		if(text == null || text.length() < 1){
+			throw new InvalidPostTextException("Called Post constructor with null text");
 		}
 
 		this.author = author;
@@ -45,4 +47,13 @@ public class Post {
 		return this.author;
 	}
 
+	public Set<String> getMentioned(List<String> validUsers){
+		Set<String> mentioned = new HashSet<>();
+		for(String user : validUsers){
+			if(text.contains(user)){
+				mentioned.add(user);
+			}
+		}
+		return mentioned;
+	}
 }

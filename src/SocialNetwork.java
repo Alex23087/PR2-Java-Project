@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -13,23 +15,59 @@ public class SocialNetwork {
 	}
 
 	public Map<String, Set<String>> guessFollowers(List<Post> ps){
-		//TODO: Implement method
-		return null;
+		Map<String, Set<String>> output = new HashMap<>();
+		for(Post post : ps){
+			String author = post.getAuthor();
+			Set<String> mentions = post.getMentioned(users);
+
+			if(!output.containsKey(author)){
+				output.put(author, new HashSet<>());
+			}
+
+			Set<String> followed = output.get(author);
+			for(String user : mentions){
+				if(!output.containsKey(user)){
+					output.put(user, new HashSet<>());
+				}
+				followed.add(user);
+			}
+		}
+		return output;
 	}
 
-	public List<String> influencers(Map<String, Set<String>> followers){
-		//TODO: Implement method
-		return null;
+	public List<String> influencers(){
+		return influencers(followers);
+	}
+
+	public static List<String> influencers(Map<String, Set<String>> followers){
+		/*followers.entrySet().stream().sorted(
+			(Map.Entry<String, Set<String>> lEntry, Map.Entry<String, Set<String>> rEntry) -> {
+				int lSize = lEntry.getValue().size();
+				int rSize = lEntry.getValue().size();
+				return lSize > rSize ? 1 : lSize < rSize ? -1 : 0;
+			}
+		);*/
+		List<String> output = new ArrayList<String>(followers.size());
+		output.addAll(followers.keySet());
+		output.sort((String lUsername, String rUsername) -> {
+			int lFollowCount = followers.get(lUsername).size();
+			int rFollowCount = followers.get(rUsername).size();
+			return Integer.compare(lFollowCount, rFollowCount);
+		});
+		return output;
 	}
 
 	public Set<String> getMentionedUsers(){
-		//TODO: Implement method
-		return null;
+		return getMentionedUsers(posts);
 	}
 
 	public Set<String> getMentionedUsers(List<Post> ps){
-		//TODO: Implement method
-		return null;
+		Set<String> users = new HashSet<String>();
+		ps.forEach(post -> {
+			users.add(post.getAuthor());
+			users.addAll(post.getMentioned(this.users));
+		});
+		return users;
 	}
 
 	public List<Post> writtenBy(String username){
@@ -56,21 +94,22 @@ public class SocialNetwork {
 		).collect(Collectors.toList());
 	}
 
-	public void createPost(String author, String text){
-		//TODO: Implement method
+	public void createPost(String author, String text) throws InvalidUsernameException, InvalidPostTextException{
+		Post post = new Post(author, text);
+		posts.add(post);
 	}
 
-	public void addUser(String username){
+	public void addUser(String username) throws InvalidUsernameException{
 		if(username == null || username.length() < 1){
-			throw new IllegalArgumentException("Trying to add user with a nonexistent username");
+			throw new InvalidUsernameException("Trying to add user with a nonexistent username");
 		}
 
 		if(Character.isWhitespace(username.charAt(0))){
-			throw new IllegalArgumentException("Username cannot start with whitespace");
+			throw new InvalidUsernameException("Username cannot start with whitespace");
 		}
 
 		if(users.contains(username)){
-			throw new IllegalArgumentException("Duplicate username");
+			throw new InvalidUsernameException("Duplicate username");
 		}
 
 		users.add(username);
