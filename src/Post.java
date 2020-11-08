@@ -49,6 +49,9 @@ public class Post {
 
 	public Set<String> getMentioned(List<String> validUsers){
 		Set<String> mentioned = new HashSet<>();
+		if(validUsers == null || validUsers.isEmpty()){
+			return mentioned;
+		}
 		for(String user : validUsers){
 			if(text.contains(user)){
 				mentioned.add(user);

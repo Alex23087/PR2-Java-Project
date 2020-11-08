@@ -1,12 +1,10 @@
-import javafx.util.Pair;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class SocialNetwork {
-	Map<String, Set<String>> followers;
-	List<Post> posts;
-	List<String> users;
+	private final Map<String, Set<String>> followers;
+	private final List<Post> posts;
+	private final List<String> users;
 
 	public SocialNetwork(){
 		followers = new HashMap<String, Set<String>>();
@@ -116,19 +114,31 @@ public class SocialNetwork {
 		followers.put(username, new HashSet<String>());
 	}
 
-	public void follow(String follower, String followed){
+	public void follow(String follower, String followed) throws InvalidUsernameException{
 		if(!users.contains(follower)){
-			throw new IllegalArgumentException("Follower username isn't in the social network");
+			throw new InvalidUsernameException("Follower username isn't in the social network");
 		}
 
 		if(!users.contains(followed)){
-			throw new IllegalArgumentException("Followed username isn't in the social network");
+			throw new InvalidUsernameException("Followed username isn't in the social network");
 		}
 
 		if(follower.equals(followed)){
-			throw new IllegalArgumentException("Users cannot follow themselves (follower == followed)");
+			throw new InvalidUsernameException("Users cannot follow themselves (follower == followed)");
 		}
 
 		followers.get(follower).add(followed);
+	}
+
+	public boolean isFollowedBy(String user, String follower) throws InvalidUsernameException{
+		if(user == null || user.length() < 1 || follower == null || follower.length() < 1){
+			throw new InvalidUsernameException("Null/empty user");
+		}
+
+		if(users.contains(follower)){
+			return followers.get(follower).contains(user);
+		}else{
+			throw new InvalidUsernameException("User " + follower + " is not contained in the social network");
+		}
 	}
 }
