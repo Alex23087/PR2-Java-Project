@@ -47,6 +47,10 @@ public class Post {
 		return this.author;
 	}
 
+	public String getText(){
+		return this.text;
+	}
+
 	public Set<String> getMentioned(List<String> validUsers){
 		Set<String> mentioned = new HashSet<>();
 		if(validUsers == null || validUsers.isEmpty()){

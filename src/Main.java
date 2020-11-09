@@ -6,6 +6,7 @@ public class Main {
         PostTest.testContainsAny();
         PostTest.testGetAuthor();
         PostTest.testGetMentioned();
+        PostTest.testGetText();
 
 
         System.out.println("Starting Post tests:");
@@ -13,5 +14,8 @@ public class Main {
         sntestset.testAddUser();
         SocialNetworkTest.testFollow();
         SocialNetworkTest.testIsFollowedBy();
+        SocialNetworkTest.testCreatePost();
+        SocialNetworkTest.testContaining();
+        SocialNetworkTest.testWrittenBy();
     }
 }

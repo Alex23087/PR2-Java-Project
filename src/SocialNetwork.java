@@ -38,13 +38,6 @@ public class SocialNetwork {
 	}
 
 	public static List<String> influencers(Map<String, Set<String>> followers){
-		/*followers.entrySet().stream().sorted(
-			(Map.Entry<String, Set<String>> lEntry, Map.Entry<String, Set<String>> rEntry) -> {
-				int lSize = lEntry.getValue().size();
-				int rSize = lEntry.getValue().size();
-				return lSize > rSize ? 1 : lSize < rSize ? -1 : 0;
-			}
-		);*/
 		List<String> output = new ArrayList<String>(followers.size());
 		output.addAll(followers.keySet());
 		output.sort((String lUsername, String rUsername) -> {
@@ -60,6 +53,9 @@ public class SocialNetwork {
 	}
 
 	public Set<String> getMentionedUsers(List<Post> ps){
+		if(ps == null || ps.size() < 1){
+			return new HashSet<String>(0);
+		}
 		Set<String> users = new HashSet<String>();
 		ps.forEach(post -> {
 			users.add(post.getAuthor());
@@ -73,26 +69,22 @@ public class SocialNetwork {
 	}
 
 	public List<Post> writtenBy(List<Post> ps, String username){
-		if(ps == null){
-			return null;
+		if(ps == null || ps.size() == 0 || username == null || username.length() < 1){
+			return new ArrayList<Post>(0);
 		}
 		return ps.stream().filter(post -> post.getAuthor().equals(username)).collect(Collectors.toList());
 	}
 
 	public List<Post> containing(List<String> words){
-		/*List<Post> result = new ArrayList<Post>();
-		posts.forEach(post -> {
-			if(post.containsAny(words)){
-				result.add(post);
-			}
-		});
-		return result;*/
 		return posts.stream().filter(
 				post -> post.containsAny(words)
 		).collect(Collectors.toList());
 	}
 
 	public void createPost(String author, String text) throws InvalidUsernameException, InvalidPostTextException{
+		if(!users.contains(author)){
+			throw new InvalidUsernameException("User " + author + " is not registered in the social network.");
+		}
 		Post post = new Post(author, text);
 		posts.add(post);
 	}

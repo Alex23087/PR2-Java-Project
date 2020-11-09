@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class SocialNetworkTest {
 	public SocialNetwork SN;
 
@@ -9,25 +12,26 @@ public class SocialNetworkTest {
 		for(String user : users){
 			try {
 				sn.addUser(user);
-			}catch(Exception e){}
+			}catch(Exception e){
+				System.err.println(e.getLocalizedMessage());
+			}
 		}
 	}
 
-	public void addPosts(String[] authors, String[] postTexts){
+	public static void addPosts(SocialNetwork sn, String[] authors, String[] postTexts){
 		if(authors.length != postTexts.length){
 			System.err.println("Trying to invoke addPosts with arrays of different lengths");
 
 		}
 		for(int i = 0; i < authors.length; i++) {
 			try {
-				SN.createPost(authors[i], postTexts[i]);
-			}catch(Exception e){}
+				sn.createPost(authors[i], postTexts[i]);
+			}catch(Exception e){
+				System.err.println(e.getLocalizedMessage());
+			}
 		}
 	}
 
-	public void resetSocialNetwork(){
-		SN = new SocialNetwork();
-	}
 
 	public void testAddUser(){
 		System.out.println("\tTesting SocialNetwork.addUser:");
@@ -229,5 +233,196 @@ public class SocialNetworkTest {
 		}catch(InvalidUsernameException iue){
 			System.err.println("\t\t\t" + iue.getLocalizedMessage());
 		}
+	}
+
+	public static void testCreatePost(){
+		System.out.println("\tTesting SocialNetwork.createPost");
+
+		SocialNetwork sn = new SocialNetwork();
+		addUsers(sn, new String[]{
+				"Alice",
+				"Bob",
+				"Carrie",
+				"Dylan"
+		});
+
+		System.out.println("\t\tTrying to create a post made by a non existent author");
+		try{
+			sn.createPost("Ethan", "test text");
+			System.err.println("\t\t\tPost was created successfully");
+		}catch(InvalidUsernameException iue){
+			System.out.println("\t\t\t" + iue.getLocalizedMessage());
+		}catch(Exception e){
+			System.err.println("\t\t\t" + e.getLocalizedMessage());
+		}
+
+		System.out.println("\t\tTrying to create a valid post");
+		try{
+			sn.createPost("Alice", "test text");
+			List<String> al = new ArrayList<String>();
+			al.add("test");
+			if(sn.containing(al).get(0).getText().equals("test text")){
+				System.out.println("\t\t\tPost was created successfully");
+			}else {
+				System.err.println("\t\t\tPost was not created successfully");
+			}
+		} catch(Exception e){
+			System.err.println("\t\t\t" + e.getLocalizedMessage());
+		}
+
+
+	}
+
+	public static void testContaining(){
+		System.out.println("\tTesting SocialNetwork.containing");
+
+		SocialNetwork sn = new SocialNetwork();
+		addUsers(sn, new String[]{
+				"Alice",
+				"Bob",
+				"Carrie",
+				"Dylan"
+		});
+
+		addPosts(sn, new String[]{
+				"Alice",
+				"Bob",
+				"Carrie",
+				"Dylan"
+		}, new String[]{
+				"This post contains a magical word",
+				"This post contains the magical word too",
+				"This post does not contain special words",
+				"Neither does this one"
+		});
+
+		List<String> test0 = new ArrayList<>(1);
+		List<String> test1 = new ArrayList<>(1);
+		List<String> test2 = new ArrayList<>(2);
+		List<String> test3 = new ArrayList<>(1);
+
+		test0.add("magical");
+		test1.add("one");
+		test2.add("contains");
+		test2.add("does");
+		test3.add("none");
+
+		List<Post> resultList = sn.containing(test0);
+		if(resultList.size() == 2){
+			System.out.println("\t\tTest 0 completed successfully");
+		}else{
+			System.err.println("\t\tTest 0 returned a wrong set of results");
+		}
+
+		resultList = sn.containing(test1);
+		if(resultList.size() == 1){
+			System.out.println("\t\tTest 1 completed successfully");
+		}else{
+			System.err.println("\t\tTest 1 returned a wrong set of results");
+		}
+
+		resultList = sn.containing(test2);
+		if(resultList.size() == 4){
+			System.out.println("\t\tTest 2 completed successfully");
+		}else{
+			System.err.println("\t\tTest 2 returned a wrong set of results");
+		}
+
+		resultList = sn.containing(test3);
+		if(resultList.size() == 0){
+			System.out.println("\t\tTest 3 completed successfully");
+		}else{
+			System.err.println("\t\tTest 3 returned a wrong set of results");
+		}
+	}
+
+	public static void testWrittenBy(){
+		System.out.println("\tTesting SocialNetwork.writtenBy");
+
+		SocialNetwork sn = new SocialNetwork();
+		addUsers(sn, new String[]{
+				"Alice",
+				"Bob",
+				"Carrie",
+				"Dylan"
+		});
+
+		addPosts(sn, new String[]{
+				"Alice",
+				"Alice",
+				"Carrie",
+				"Dylan"
+		}, new String[]{
+				"This post contains a magical word",
+				"This post contains the magical word too",
+				"This post does not contain special words",
+				"Neither does this one"
+		});
+
+		List<Post> resultList = sn.writtenBy("Alice");
+		if(resultList.size() == 2){
+			System.out.println("\t\tTest 0 (valid input, nonempty result) completed successfully");
+		}else{
+			System.err.println("\t\tTest 0 (valid input, nonempty result) failed");
+		}
+
+		resultList = sn.writtenBy("Bob");
+		if(resultList.size() == 0){
+			System.out.println("\t\tTest 1 (valid input, empty result) completed successfully");
+		}else{
+			System.err.println("\t\tTest 1 (valid input, empty result) failed");
+		}
+
+		resultList = sn.writtenBy(null);
+		if(resultList.size() == 0){
+			System.out.println("\t\tTest 2 (nonempty post list, null username) completed successfully");
+		}else{
+			System.err.println("\t\tTest 2 (nonempty post list, null username) failed");
+		}
+
+		resultList = sn.writtenBy("");
+		if(resultList.size() == 0){
+			System.out.println("\t\tTest 3 (nonempty post list, empty username) completed successfully");
+		}else{
+			System.err.println("\t\tTest 3 (nonempty post list, empty username) failed");
+		}
+
+		resultList = sn.writtenBy( null, "Bob");
+		if(resultList.size() == 0){
+			System.out.println("\t\tTest 4 (null post list, valid username) completed successfully");
+		}else{
+			System.err.println("\t\tTest 4 (null post list, valid username) failed");
+		}
+
+		resultList = sn.writtenBy(new ArrayList<Post>(0), "Bob");
+		if(resultList.size() == 0){
+			System.out.println("\t\tTest 5 (empty post list, valid username) completed successfully");
+		}else {
+			System.err.println("\t\tTest 5 (empty post list, valid username) failed");
+		}
+	}
+
+	public static void testGetMentionedUsers(){
+		System.out.println("\tTesting SocialNetwork.getMentionedUsers");
+
+		SocialNetwork sn = new SocialNetwork();
+		addUsers(sn, new String[]{
+				"Alice",
+				"Bob",
+				"Carrie",
+				"Dylan"
+		});
+
+		addPosts(sn, new String[]{
+				"Alice",
+				"Alice",
+				"Carrie",
+				"Dylan"
+		}, new String[]{
+				"This post contains a magical word",
+				"This post contains the magical word too",
+				"This post does not contain special words",
+				"Neither does this one"
+		});
 	}
 }
