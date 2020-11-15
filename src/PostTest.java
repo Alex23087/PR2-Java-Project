@@ -3,6 +3,8 @@ import java.util.List;
 import java.util.Set;
 
 public class PostTest {
+	private PostTest(){}
+
 	public static void testConstructor(){
 		System.out.println("\tTesting Post constructor");
 
@@ -187,5 +189,19 @@ public class PostTest {
 		}else{
 			System.err.println("\t\tWrong text returned");
 		}
+	}
+
+	public static void testGetId(){
+		System.out.println("\tTesting Post.getId");
+		Post p;
+		try {
+			p = new Post("author", "test text");
+		}catch(Exception e){
+			System.err.println("\t\tSomething went wrong while creating the test post: " + e.getLocalizedMessage());
+			return;
+		}
+
+		String id = p.getId();
+		System.out.println("\t\tGot ID: " + id);
 	}
 }

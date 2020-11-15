@@ -3,7 +3,7 @@ import java.util.stream.Collectors;
 
 public class SocialNetwork {
 	private final Map<String, Set<String>> followers;
-	private final List<Post> posts;
+	protected final List<Post> posts;
 	private final List<String> users;
 
 	public SocialNetwork(){
@@ -103,12 +103,26 @@ public class SocialNetwork {
 		).collect(Collectors.toList());
 	}
 
-	public void createPost(String author, String text) throws InvalidUsernameException, InvalidPostTextException{
+	public String createPost(String author, String text) throws InvalidUsernameException, InvalidPostTextException{
 		if(!users.contains(author)){
 			throw new InvalidUsernameException("User " + author + " is not registered in the social network.");
 		}
 		Post post = new Post(author, text);
 		posts.add(post);
+		return post.getId();
+	}
+
+	protected static boolean containsPost(String id, List<Post> posts){
+		for(Post post : posts){
+			if(post.getId().equals(id)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean publishedPostWithId(String id){
+		return containsPost(id, posts);
 	}
 
 	public void addUser(String username) throws InvalidUsernameException{

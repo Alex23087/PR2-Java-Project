@@ -1,13 +1,9 @@
 import java.util.*;
 
 public class SocialNetworkTest {
-	public SocialNetwork SN;
+	private SocialNetworkTest(){}
 
-	public SocialNetworkTest(){
-		SN = new SocialNetwork();
-	}
-
-	public static void addUsers(SocialNetwork sn, String[] users){
+	public static void addUsers(SocialNetwork sn, String... users){
 		for(String user : users){
 			try {
 				sn.addUser(user);
@@ -32,11 +28,13 @@ public class SocialNetworkTest {
 	}
 
 
-	public void testAddUser(){
+	public static void testAddUser(){
+		SocialNetwork sn = new SocialNetwork();
+
 		System.out.println("\tTesting SocialNetwork.addUser:");
 		try {
 			System.out.println("\t\tAdding null username:");
-			SN.addUser(null);
+			sn.addUser(null);
 			System.err.println("\t\t\tNULL USERNAME WAS ADDED");
 		}catch(InvalidUsernameException iue){
 			System.out.println("\t\t\t" + iue.getLocalizedMessage());
@@ -47,7 +45,7 @@ public class SocialNetworkTest {
 
 		try {
 			System.out.println("\t\tAdding empty username:");
-			SN.addUser("");
+			sn.addUser("");
 			System.err.println("\t\t\tEMPTY USERNAME WAS ADDED");
 		}catch(InvalidUsernameException iue){
 			System.out.println("\t\t\t" + iue.getLocalizedMessage());
@@ -58,7 +56,7 @@ public class SocialNetworkTest {
 
 		try {
 			System.out.println("\t\tAdding username starting with whitespace:");
-			SN.addUser(" test1");
+			sn.addUser(" test1");
 			System.err.println("\t\t\tUSERNAME STARTING WITH WHITESPACE WAS ADDED");
 		}catch(InvalidUsernameException iue){
 			System.out.println("\t\t\t" + iue.getLocalizedMessage());
@@ -69,7 +67,7 @@ public class SocialNetworkTest {
 
 		try {
 			System.out.println("\t\tAdding valid username:");
-			SN.addUser("John");
+			sn.addUser("John");
 			System.out.println("\t\t\tValid username accepted");
 		}catch(InvalidUsernameException iue){
 			System.err.println("\t\t\t" + iue.getLocalizedMessage());
@@ -80,7 +78,7 @@ public class SocialNetworkTest {
 
 		try {
 			System.out.println("\t\tAdding duplicate username:");
-			SN.addUser("John");
+			sn.addUser("John");
 			System.err.println("\t\t\tDUPLICATE USERNAME WAS ADDED");
 		}catch(InvalidUsernameException iue){
 			System.out.println("\t\t\t" + iue.getLocalizedMessage());
@@ -93,12 +91,10 @@ public class SocialNetworkTest {
 	public static void testFollow(){
 		System.out.println("\tTesting SocialNetwork.follow");
 		SocialNetwork sn = new SocialNetwork();
-		addUsers(sn, new String[]{
-			"Alice",
-			"Bob",
-			"Carrie",
-			"Dylan"
-		});
+		addUsers(sn, "Alice",
+				"Bob",
+				"Carrie",
+				"Dylan");
 
 		System.out.println("\t\tTrying to get a non existent user to follow someone");
 		try{
@@ -157,12 +153,10 @@ public class SocialNetworkTest {
 	public static void testIsFollowedBy(){
 		System.out.println("\tTesting SocialNetwork.isFollowedBy");
 		SocialNetwork sn = new SocialNetwork();
-		addUsers(sn, new String[]{
-				"Alice",
+		addUsers(sn, "Alice",
 				"Bob",
 				"Carrie",
-				"Dylan"
-		});
+				"Dylan");
 
 		try {
 			sn.follow("Alice", "Bob");
@@ -238,12 +232,10 @@ public class SocialNetworkTest {
 		System.out.println("\tTesting SocialNetwork.createPost");
 
 		SocialNetwork sn = new SocialNetwork();
-		addUsers(sn, new String[]{
-				"Alice",
+		addUsers(sn, "Alice",
 				"Bob",
 				"Carrie",
-				"Dylan"
-		});
+				"Dylan");
 
 		System.out.println("\t\tTrying to create a post made by a non existent author");
 		try{
@@ -276,12 +268,10 @@ public class SocialNetworkTest {
 		System.out.println("\tTesting SocialNetwork.containing");
 
 		SocialNetwork sn = new SocialNetwork();
-		addUsers(sn, new String[]{
-				"Alice",
+		addUsers(sn, "Alice",
 				"Bob",
 				"Carrie",
-				"Dylan"
-		});
+				"Dylan");
 
 		addPosts(sn, new String[]{
 				"Alice",
@@ -339,12 +329,10 @@ public class SocialNetworkTest {
 		System.out.println("\tTesting SocialNetwork.writtenBy");
 
 		SocialNetwork sn = new SocialNetwork();
-		addUsers(sn, new String[]{
-				"Alice",
+		addUsers(sn, "Alice",
 				"Bob",
 				"Carrie",
-				"Dylan"
-		});
+				"Dylan");
 
 		addPosts(sn, new String[]{
 				"Alice",
@@ -405,12 +393,10 @@ public class SocialNetworkTest {
 		System.out.println("\tTesting SocialNetwork.getMentionedUsers");
 
 		SocialNetwork sn = new SocialNetwork();
-		addUsers(sn, new String[]{
-				"Alice",
+		addUsers(sn, "Alice",
 				"Bob",
 				"Carrie",
-				"Dylan"
-		});
+				"Dylan");
 
 		addPosts(sn, new String[]{
 				"Alice",
@@ -461,12 +447,12 @@ public class SocialNetworkTest {
 			System.out.println("\t\t\tReturned empty list correctly");
 		}
 
-		addUsers(sn, new String[]{
+		addUsers(sn,
 				"Alice",
 				"Bob",
 				"Carrie",
 				"Dylan"
-		});
+		);
 		try {
 			sn.follow("Bob", "Alice");
 			sn.follow("Carrie", "Alice");
@@ -528,13 +514,43 @@ public class SocialNetworkTest {
 		result = sn.guessFollowers();
 		Map<String, Set<String>> expected = new HashMap<>(4);
 		expected.put("Alice", new HashSet<String>(Arrays.asList("Carrie", "Bob", "Ethan")));
-		expected.put("Bob", new HashSet<String>(Arrays.asList("Alice")));
-		expected.put("Carrie", new HashSet<String>(Arrays.asList("Bob")));
+		expected.put("Bob", new HashSet<String>(Collections.singletonList("Alice")));
+		expected.put("Carrie", new HashSet<String>(Collections.singletonList("Bob")));
 		expected.put("Ethan", new HashSet<String>(Collections.emptyList()));
 		if(result.equals(expected)){
 			System.out.println("\t\t\tReturned expected value");
 		}else{
 			System.err.println("\t\t\tWrong value returned: " + result.toString() + " expected: " + expected.toString());
+		}
+	}
+
+	public static void testPublishedPostWithId(){
+		System.out.println("\tTesting SocialNetwork.publishedPostWithId");
+		SocialNetwork sn = new SocialNetwork();
+		addUsers(sn, "Alice");
+		Optional<String> postId = Optional.empty();
+		try {
+			postId = Optional.of(sn.createPost("Alice", "Test Text"));
+		} catch (InvalidUsernameException | InvalidPostTextException e) {
+			System.err.println("\t\tSomething went wrong while creating the test post: " + e.getLocalizedMessage());
+		}
+
+		System.out.println("\t\tTesting non contained post id");
+		if(sn.publishedPostWithId("testID")){
+			System.err.println("\t\t\tReturned true instead of false");
+		}else{
+			System.out.println("\t\t\tCorrect value returned");
+		}
+
+		System.out.println("\t\tTesting contained post id");
+		if(postId.isEmpty()) {
+			System.err.println("\t\t\tPost creation returned null id");
+		}else{
+			if(sn.publishedPostWithId(postId.get())){
+				System.out.println("\t\t\tReturned correctly");
+			}else{
+				System.err.println("\t\t\tReturned value is false instead of true");
+			}
 		}
 	}
 }

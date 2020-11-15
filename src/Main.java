@@ -7,11 +7,12 @@ public class Main {
         PostTest.testGetAuthor();
         PostTest.testGetMentioned();
         PostTest.testGetText();
+        PostTest.testGetId();
 
+        System.out.println("\n\n");
 
-        System.out.println("Starting Post tests:");
-        SocialNetworkTest sntestset = new SocialNetworkTest();
-        sntestset.testAddUser();
+        System.out.println("Starting SocialNetwork tests:");
+        SocialNetworkTest.testAddUser();
         SocialNetworkTest.testFollow();
         SocialNetworkTest.testIsFollowedBy();
         SocialNetworkTest.testCreatePost();
@@ -20,5 +21,11 @@ public class Main {
         SocialNetworkTest.testGetMentionedUsers();
         SocialNetworkTest.testInfluencers();
         SocialNetworkTest.testGuessFollowers();
+        SocialNetworkTest.testPublishedPostWithId();
+
+        System.out.println("\n\n");
+
+        System.out.println("Starting DeletableSocialNetwork tests:");
+        DeletableSocialNetworkTest.testDeletePost();
     }
 }

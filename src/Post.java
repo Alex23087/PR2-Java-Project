@@ -43,6 +43,10 @@ public class Post {
 		return false;
 	}
 
+	public String getId(){
+		return this.id;
+	}
+
 	public String getAuthor(){
 		return this.author;
 	}
