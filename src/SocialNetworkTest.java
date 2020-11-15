@@ -1,5 +1,4 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class SocialNetworkTest {
 	public SocialNetwork SN;
@@ -415,14 +414,127 @@ public class SocialNetworkTest {
 
 		addPosts(sn, new String[]{
 				"Alice",
+				"Bob",
+				"Carrie",
+				"Alice"
+		}, new String[]{
+				"This post was written by Alice",
+				"I like Alice's post",
+				"I wish Bob wrote more interesting posts",
+				"I agree with Carrie, Bob's posts are boring"
+		});
+
+		System.out.println("\t\tPassing null post list");
+		Set<String> result = sn.getMentionedUsers(null);
+		if(result.size() == 0){
+			System.out.println("\t\t\tReturned empty set correctly");
+		}else{
+			System.err.println("\t\t\tReturned set is not empty");
+		}
+
+
+		System.out.println("\t\tPassing empty post list");
+		result = sn.getMentionedUsers(new ArrayList<Post>(0));
+		if(result.size() == 0){
+			System.out.println("\t\t\tReturned empty set correctly");
+		}else{
+			System.err.println("\t\t\tReturned set is not empty");
+		}
+
+		System.out.println("\t\tTesting valid case");
+		result = sn.getMentionedUsers();
+		if(result.size() == 3 && result.contains("Alice") && result.contains("Bob") && result.contains("Carrie")){
+			System.out.println("\t\t\tReturned correct values");
+		}else{
+			System.err.println("\t\t\tWrong return values");
+		}
+	}
+
+	public static void testInfluencers() {
+		System.out.println("\tTesting SocialNetwork.influencers");
+
+		SocialNetwork sn = new SocialNetwork();
+
+		System.out.println("\t\tTesting empty followers map");
+		List<String> result = sn.influencers();
+		if(result != null && result.size() == 0){
+			System.out.println("\t\t\tReturned empty list correctly");
+		}
+
+		addUsers(sn, new String[]{
 				"Alice",
+				"Bob",
 				"Carrie",
 				"Dylan"
-		}, new String[]{
-				"This post contains a magical word",
-				"This post contains the magical word too",
-				"This post does not contain special words",
-				"Neither does this one"
 		});
+		try {
+			sn.follow("Bob", "Alice");
+			sn.follow("Carrie", "Alice");
+			sn.follow("Dylan", "Alice");
+			sn.follow("Alice", "Bob");
+			sn.follow("Carrie", "Bob");
+			sn.follow("Alice", "Dylan");
+		}catch(Exception e){
+			System.err.println("\t\tSomething went wrong while creating the case for the test");
+		}
+
+		System.out.println("\t\tTesting generic case");
+		result = sn.influencers();
+		if(result != null && result.size() == 4 && result.get(0).equals("Alice") && result.get(1).equals("Bob") && result.get(2).equals("Dylan")){
+			System.out.println("\t\t\tReturned correct values");
+		}else{
+			if (result != null) {
+				System.err.println("\t\t\tReturned wrong values: " + result.toString());
+			}else{
+				System.err.println("\t\t\tReturned null");
+			}
+		}
+	}
+
+	public static void testGuessFollowers(){
+
+		System.out.println("\tTesting SocialNetwork.guessFollowers");
+
+		SocialNetwork sn = new SocialNetwork();
+		addUsers(sn, new String[]{
+				"Alice",
+				"Bob",
+				"Carrie",
+				"Dylan",
+				"Ethan"
+		});
+
+		System.out.println("\t\tPassing empty post list");
+		Map<String, Set<String>> result = sn.guessFollowers();
+		if(result.size() == 0){
+			System.out.println("\t\t\tReturned empty map correctly");
+		}else{
+			System.err.println("\t\t\tReturned wrong value");
+		}
+
+		System.out.println("\t\tTesting generic case");
+		addPosts(sn, new String[]{
+				"Alice",
+				"Bob",
+				"Carrie",
+				"Alice"
+		}, new String[]{
+				"This post was written by Alice",
+				"I like Alice's post",
+				"I wish Bob wrote more interesting posts",
+				"I agree with Carrie, Bob's posts are boring, but I like Ethan's ones more"
+		});
+
+		result = sn.guessFollowers();
+		Map<String, Set<String>> expected = new HashMap<>(4);
+		expected.put("Alice", new HashSet<String>(Arrays.asList("Carrie", "Bob", "Ethan")));
+		expected.put("Bob", new HashSet<String>(Arrays.asList("Alice")));
+		expected.put("Carrie", new HashSet<String>(Arrays.asList("Bob")));
+		expected.put("Ethan", new HashSet<String>(Collections.emptyList()));
+		if(result.equals(expected)){
+			System.out.println("\t\t\tReturned expected value");
+		}else{
+			System.err.println("\t\t\tWrong value returned: " + result.toString() + " expected: " + expected.toString());
+		}
 	}
 }

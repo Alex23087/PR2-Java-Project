@@ -12,7 +12,11 @@ public class SocialNetwork {
 		users = new ArrayList<String>();
 	}
 
-	public Map<String, Set<String>> guessFollowers(List<Post> ps){
+	public Map<String, Set<String>> guessFollowers(){
+		return guessFollowers(this.posts);
+	}
+
+	private Map<String, Set<String>> guessFollowers(List<Post> ps){
 		Map<String, Set<String>> output = new HashMap<>();
 		for(Post post : ps){
 			String author = post.getAuthor();
@@ -24,6 +28,9 @@ public class SocialNetwork {
 
 			Set<String> followed = output.get(author);
 			for(String user : mentions){
+				if(user.equals(author)){
+					continue;
+				}
 				if(!output.containsKey(user)){
 					output.put(user, new HashSet<>());
 				}
@@ -37,13 +44,28 @@ public class SocialNetwork {
 		return influencers(followers);
 	}
 
-	public static List<String> influencers(Map<String, Set<String>> followers){
+	private static List<String> influencers(Map<String, Set<String>> followers){
+		if(followers == null || followers.size() == 0){
+			return new ArrayList<>(0);
+		}
 		List<String> output = new ArrayList<String>(followers.size());
 		output.addAll(followers.keySet());
+
+		Map<String, Integer> follows = new HashMap<>(followers.size());
+		for(String user : followers.keySet()){
+			int count = 0;
+			for(String u : followers.keySet()){
+				if(followers.get(u).contains(user)){
+					count++;
+				}
+			}
+			follows.put(user, count);
+		}
+
 		output.sort((String lUsername, String rUsername) -> {
-			int lFollowCount = followers.get(lUsername).size();
-			int rFollowCount = followers.get(rUsername).size();
-			return Integer.compare(lFollowCount, rFollowCount);
+			int lFollowCount = follows.get(lUsername);
+			int rFollowCount = follows.get(rUsername);
+			return -Integer.compare(lFollowCount, rFollowCount);
 		});
 		return output;
 	}

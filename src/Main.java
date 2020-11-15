@@ -17,5 +17,8 @@ public class Main {
         SocialNetworkTest.testCreatePost();
         SocialNetworkTest.testContaining();
         SocialNetworkTest.testWrittenBy();
+        SocialNetworkTest.testGetMentionedUsers();
+        SocialNetworkTest.testInfluencers();
+        SocialNetworkTest.testGuessFollowers();
     }
 }
