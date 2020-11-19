@@ -155,6 +155,15 @@ public class SocialNetwork {
 		return users;
 	}
 
+
+	/**
+	 * Returns a list of posts written by the user passed as parameter,
+	 * contained in the social network.
+	 *
+	 * @param username The author whose posts have to be returned
+	 *
+	 * @return A List of Posts with username.equals(post.getAuthor())
+	 **/
 	public List<Post> writtenBy(String username){
 		return writtenBy(posts, username);
 	}
@@ -163,7 +172,12 @@ public class SocialNetwork {
 	 * Returns a list of posts written by the user passed as parameter,
 	 * contained in the list of posts passed as parameter.
 	 *
-	 * @ps
+	 * @param ps The list of posts in which to search.
+	 *
+	 * @param username The author whose posts have to be returned
+	 *
+	 * @return A List of Posts with username.equals(post.getAuthor())
+	 **/
 	public List<Post> writtenBy(List<Post> ps, String username){
 		if(ps == null || ps.size() == 0 || username == null || username.length() < 1){
 			return new ArrayList<Post>(0);
@@ -171,12 +185,32 @@ public class SocialNetwork {
 		return ps.stream().filter(post -> post.getAuthor().equals(username)).collect(Collectors.toList());
 	}
 
+	/**
+	 * Finds all the posts containing in their text at least one of the words in the list passed as parameter.
+	 *
+	 * @param words The list of words to search for.
+	 *
+	 * @return A List of Posts for which post.containsAny(words) == true
+	 **/
 	public List<Post> containing(List<String> words){
 		return posts.stream().filter(
 				post -> post.containsAny(words)
 		).collect(Collectors.toList());
 	}
 
+	/**
+	 * Adds a Post to the SocialNetwork.
+	 *
+	 * @param author The author of the post to be created.
+	 *
+	 * @param text The text of the post to be created.
+	 *
+	 * @return The ID of the newly created Post.
+	 *
+	 * @throws InvalidUsernameException If the user is not registered in the social network, or if the username does not respect the username validity conditions: 0 < username.length() && Character.isWhitespace(username.charAt[0]) == false
+	 *
+	 * @throws InvalidPostTextException If the text does not fulfill the post text validity conditions: 0 < text.length() <= 140
+	 **/
 	public String createPost(String author, String text) throws InvalidUsernameException, InvalidPostTextException{
 		if(!users.contains(author)){
 			throw new InvalidUsernameException("User " + author + " is not registered in the social network.");
@@ -186,7 +220,17 @@ public class SocialNetwork {
 		return post.getId();
 	}
 
+	/**
+	 * Checks if a post with a specified ID is contained in a list of Posts.
+	 *
+	 * @param id The ID of the post to look for.
+	 *
+	 * @param posts The List of Posts to perform the check on.
+	 *
+	 * @return True if and only if the list contains a post with the specified ID, false otherwise, or if posts == null || posts.size() == 0 || id == null
+	 */
 	protected static boolean containsPost(String id, List<Post> posts){
+		//TODO: Add nullness and emptiness checks
 		for(Post post : posts){
 			if(post.getId().equals(id)){
 				return true;
@@ -195,10 +239,26 @@ public class SocialNetwork {
 		return false;
 	}
 
+	/**
+	 * Checks if a Post with the specified ID hasa been published.
+	 *
+	 * @param id The ID of the Post to look for.
+	 *
+	 * @return True if and only if the SocialNetwork contains a post with the specified ID, false otherwise, or if posts == null || posts.size() == 0 || id == null
+	 **/
 	public boolean publishedPostWithId(String id){
 		return containsPost(id, posts);
 	}
 
+	/**
+	 * Registers a user into the SocialNetwork.
+	 *
+	 * @param username The username of the user to add to the social network
+	 *
+	 * @throws InvalidUsernameException When there already is a user registered with this username, or when the
+	 *                                  username doesn't respect the username constraints:
+	 *                                      username != null && username.length() >= 1 && Character.isWhitespace(username.charAt(0)) == false
+	 **/
 	public void addUser(String username) throws InvalidUsernameException{
 		if(username == null || username.length() < 1){
 			throw new InvalidUsernameException("Trying to add user with a nonexistent username");
@@ -216,6 +276,15 @@ public class SocialNetwork {
 		followers.put(username, new HashSet<String>());
 	}
 
+	/**
+	 * Adds a user to the set of users followed by another user.
+	 *
+	 * @param follower The user who's following.
+	 *
+	 * @param followed The user who's being followed.
+	 *
+	 * @throws InvalidUsernameException When either follower or followed is not a user registered in the social network, or when users are trying to follow themselves.
+	 **/
 	public void follow(String follower, String followed) throws InvalidUsernameException{
 		if(!users.contains(follower)){
 			throw new InvalidUsernameException("Follower username isn't in the social network");
@@ -232,6 +301,17 @@ public class SocialNetwork {
 		followers.get(follower).add(followed);
 	}
 
+	/**
+	 * Checks if a user is currently being followed by another user.
+	 *
+	 * @param user The user who is being searched for in the follower's following set.
+	 *
+	 * @param follower The user in which set the search is happening.
+	 *
+	 * @return True if and only if follower.follows(user). False otherwise.
+	 *
+	 * @throws InvalidUsernameException When user or follower are null or empty, or when follower is not a user registered in the social network.
+	 **/
 	public boolean isFollowedBy(String user, String follower) throws InvalidUsernameException{
 		if(user == null || user.length() < 1 || follower == null || follower.length() < 1){
 			throw new InvalidUsernameException("Null/empty user");
