@@ -55,7 +55,7 @@ public class SocialNetwork {
 	 **/
 	private Map<String, Set<String>> guessFollowers(List<Post> ps){
 		Map<String, Set<String>> output = new HashMap<>();
-		if(ps == null){
+		if(ps == null || ps.size() == 0){
 			return output;
 		}
 		for(Post post : ps){
@@ -230,7 +230,9 @@ public class SocialNetwork {
 	 * @return True if and only if the list contains a post with the specified ID, false otherwise, or if posts == null || posts.size() == 0 || id == null
 	 */
 	protected static boolean containsPost(String id, List<Post> posts){
-		//TODO: Add nullness and emptiness checks
+		if(posts == null || posts.size() == 0 || id == null || id.length() < 1){
+			return false;
+		}
 		for(Post post : posts){
 			if(post.getId().equals(id)){
 				return true;

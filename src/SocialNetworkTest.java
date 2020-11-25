@@ -482,13 +482,11 @@ public class SocialNetworkTest {
 		System.out.println("\tTesting SocialNetwork.guessFollowers");
 
 		SocialNetwork sn = new SocialNetwork();
-		addUsers(sn, new String[]{
-				"Alice",
+		addUsers(sn, "Alice",
 				"Bob",
 				"Carrie",
 				"Dylan",
-				"Ethan"
-		});
+				"Ethan");
 
 		System.out.println("\t\tPassing empty post list");
 		Map<String, Set<String>> result = sn.guessFollowers();
@@ -533,6 +531,13 @@ public class SocialNetworkTest {
 			postId = Optional.of(sn.createPost("Alice", "Test Text"));
 		} catch (InvalidUsernameException | InvalidPostTextException e) {
 			System.err.println("\t\tSomething went wrong while creating the test post: " + e.getLocalizedMessage());
+		}
+
+		System.out.println("\t\tTesting null post id");
+		if(sn.publishedPostWithId(null)){
+			System.err.println("\t\t\tReturned true instead of false");
+		}else{
+			System.out.println("\t\t\tCorrect value returned");
 		}
 
 		System.out.println("\t\tTesting non contained post id");

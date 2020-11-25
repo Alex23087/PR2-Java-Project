@@ -52,6 +52,16 @@ public class PostTest {
 			System.err.println("\t\t\tUnknown exception: " + e.getLocalizedMessage());
 		}
 
+		try{
+			System.out.println("\t\ttext.length() > 140");
+			Post p = new Post("Author", "This is a really long post that exceeds te limit of 140 character imposed by the social network. Let's see if it still allows me to create it or if the exception gets correctly called");
+			System.err.println("\t\t\tPost was created successfully");
+		}catch (InvalidPostTextException ipte){
+			System.out.println("\t\t\t" + ipte.getLocalizedMessage());
+		}catch(Exception e){
+			System.err.println("\t\t\tUnknown exception: " + e.getLocalizedMessage());
+		}
+
 		try {
 			System.out.println("\t\tValid post:");
 			Post p = new Post("testAuthor", "testText");

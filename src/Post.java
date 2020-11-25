@@ -42,7 +42,9 @@ public class Post {
 		if(text == null || text.length() < 1){
 			throw new InvalidPostTextException("Called Post constructor with null text");
 		}
-		//TODO: Check text.length() <= 10
+		if(text.length() > 140){
+			throw new InvalidPostTextException("The post's text cannot be more than 140 characters long");
+		}
 
 		this.author = author;
 		this.text = text;
