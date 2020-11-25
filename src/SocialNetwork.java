@@ -325,4 +325,24 @@ public class SocialNetwork {
 			throw new InvalidUsernameException("User " + follower + " is not contained in the social network");
 		}
 	}
+
+	/**
+	 * Searches in the list passed as parameter a Post with the ID passed as parameter.
+	 *
+	 * @param posts The list of posts in which to perform the search.
+	 *
+	 * @param id The ID of the Post that is being searched.
+	 *
+	 * @return An Optional containing the Post that has been found, or empty if no Posts with the specified ID were found in the List.
+	 **/
+	protected Optional<Post> findPost(List<Post> posts, String id){
+		Optional<Post> found = Optional.empty();
+		for(Post post : posts){
+			if(post.getId().equals(id)){
+				found = Optional.of(post);
+				break;
+			}
+		}
+		return found;
+	}
 }

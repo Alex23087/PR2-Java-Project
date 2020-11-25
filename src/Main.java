@@ -26,6 +26,8 @@ public class Main {
         System.out.println("\n\n");
 
         System.out.println("Starting DeletableSocialNetwork tests:");
-        DeletableSocialNetworkTest.testDeletePost();
+        ReportableSocialNetworkTest.testReportPost();
+        ReportableSocialNetworkTest.testRestorePost();
+        ReportableSocialNetworkTest.testDeletePost();
     }
 }
