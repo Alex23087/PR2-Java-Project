@@ -63,15 +63,18 @@ public class SocialNetwork {
 			Set<String> mentions = post.getMentioned(users);
 
 			if(!output.containsKey(author)){
+				//Create new entry in the output map, with author as key and an empty set as value
 				output.put(author, new HashSet<>());
 			}
 
 			Set<String> followed = output.get(author);
+			//Add all users mentioned in the post to the set of users followed by the author of the post
 			for(String user : mentions){
 				if(user.equals(author)){
 					continue;
 				}
 				if(!output.containsKey(user)){
+					//All users have to have an entry in the social network map, even those who are only mentioned
 					output.put(user, new HashSet<>());
 				}
 				followed.add(user);
@@ -103,9 +106,11 @@ public class SocialNetwork {
 		if(followers == null || followers.size() == 0){
 			return new ArrayList<>(0);
 		}
+
 		List<String> output = new ArrayList<String>(followers.size());
 		output.addAll(followers.keySet());
 
+		//Calculate a Map that associates each user with the count of other users who follow them
 		Map<String, Integer> follows = new HashMap<>(followers.size());
 		for(String user : followers.keySet()){
 			int count = 0;
@@ -117,6 +122,7 @@ public class SocialNetwork {
 			follows.put(user, count);
 		}
 
+		//Sort the list of users based on the count of followers in decreasing order
 		output.sort((String lUsername, String rUsername) -> {
 			int lFollowCount = follows.get(lUsername);
 			int rFollowCount = follows.get(rUsername);
@@ -173,7 +179,6 @@ public class SocialNetwork {
 	 * contained in the list of posts passed as parameter.
 	 *
 	 * @param ps The list of posts in which to search.
-	 *
 	 * @param username The author whose posts have to be returned
 	 *
 	 * @return A List of Posts with username.equals(post.getAuthor())
@@ -201,14 +206,19 @@ public class SocialNetwork {
 	/**
 	 * Adds a Post to the SocialNetwork.
 	 *
-	 * @param author The author of the post to be created.
+	 * @requires author is in users
+	 * @requires 0 < text.length() <= 140
 	 *
+	 * @param author The author of the post to be created.
 	 * @param text The text of the post to be created.
+	 *
+	 * @modifies this.posts
+	 *
+	 * @effects this.posts = this.posts U {new Post(author, text)}
 	 *
 	 * @return The ID of the newly created Post.
 	 *
 	 * @throws InvalidUsernameException If the user is not registered in the social network, or if the username does not respect the username validity conditions: 0 < username.length() && Character.isWhitespace(username.charAt[0]) == false
-	 *
 	 * @throws InvalidPostTextException If the text does not fulfill the post text validity conditions: 0 < text.length() <= 140
 	 **/
 	public String createPost(String author, String text) throws InvalidUsernameException, InvalidPostTextException{
@@ -224,7 +234,6 @@ public class SocialNetwork {
 	 * Checks if a post with a specified ID is contained in a list of Posts.
 	 *
 	 * @param id The ID of the post to look for.
-	 *
 	 * @param posts The List of Posts to perform the check on.
 	 *
 	 * @return True if and only if the list contains a post with the specified ID, false otherwise, or if posts == null || posts.size() == 0 || id == null
@@ -255,7 +264,15 @@ public class SocialNetwork {
 	/**
 	 * Registers a user into the SocialNetwork.
 	 *
+	 * @requires username not in users && username is a valid username
+	 *
 	 * @param username The username of the user to add to the social network
+	 *
+	 * @modifies this.users
+	 * @modifies this.followers
+	 *
+	 * @effects this.users = this.users U {username}
+	 * @effects this.followers = this.followers U {(username, {})}
 	 *
 	 * @throws InvalidUsernameException When there already is a user registered with this username, or when the
 	 *                                  username doesn't respect the username constraints:
@@ -281,9 +298,16 @@ public class SocialNetwork {
 	/**
 	 * Adds a user to the set of users followed by another user.
 	 *
-	 * @param follower The user who's following.
+	 * @requires follower is in users
+	 * @requires followed is in users
+	 * @requires follower != followed
 	 *
+	 * @param follower The user who's following.
 	 * @param followed The user who's being followed.
+	 *
+	 * @modifies this.followers
+	 *
+	 * @effects this.followers.get(follower) = this.followers.get(follower) U {followed}
 	 *
 	 * @throws InvalidUsernameException When either follower or followed is not a user registered in the social network, or when users are trying to follow themselves.
 	 **/
@@ -306,8 +330,11 @@ public class SocialNetwork {
 	/**
 	 * Checks if a user is currently being followed by another user.
 	 *
-	 * @param user The user who is being searched for in the follower's following set.
+	 * @requires user not empty
+	 * @requires follower not empty
+	 * @requires follower is in users
 	 *
+	 * @param user The user who is being searched for in the follower's following set.
 	 * @param follower The user in which set the search is happening.
 	 *
 	 * @return True if and only if follower.follows(user). False otherwise.
@@ -330,7 +357,6 @@ public class SocialNetwork {
 	 * Searches in the list passed as parameter a Post with the ID passed as parameter.
 	 *
 	 * @param posts The list of posts in which to perform the search.
-	 *
 	 * @param id The ID of the Post that is being searched.
 	 *
 	 * @return An Optional containing the Post that has been found, or empty if no Posts with the specified ID were found in the List.

@@ -26,7 +26,15 @@ public class ReportableSocialNetwork extends SocialNetwork{
 	/**
 	 * Reports a post in the social network.
 	 *
+	 * @requires findPost(posts, id) != null
+	 *
 	 * @param id The ID of the Post to be reported.
+	 *
+	 * @modifies this.posts
+	 * @modifies this.reportedPosts
+	 *
+	 * @effects this.posts = this.posts \ {findPost(id)}
+	 * @effects this.reportedPosts = this.reportedPosts U {findPost(id)}
 	 *
 	 * @throws NonExistentPostException When a Post with the specified ID is not found in the social network.
 	 **/
@@ -44,7 +52,15 @@ public class ReportableSocialNetwork extends SocialNetwork{
 	/**
 	 * Restores a Post that has been reported to its normal state.
 	 *
+	 * @requires findPost(reportedPosts, id) != null
+	 *
 	 * @param id The ID of the Post to be restored.
+	 *
+	 * @modifies this.posts
+	 * @modifies this.reportedPosts
+	 *
+	 * @effects this.posts = this.posts U {findPost(id)}
+	 * @effects this.reportedPosts = this.reportedPosts \ {findPost(id)}
 	 *
 	 * @throws NonExistentPostException When a Post with the specified ID is not found in the list of reported posts.
 	 **/
@@ -62,7 +78,13 @@ public class ReportableSocialNetwork extends SocialNetwork{
 	/**
 	 * Permanently deletes a Post that has been previously reported.
 	 *
+	 * @requires findPost(reportedPosts, id) != null
+	 * 
 	 * @param id The ID of the Post to be deleted.
+	 *
+	 * @modifies this.reportedPosts
+	 *
+	 * @effects this.reportedPosts = this.reportedPosts \ {findPost(id)}
 	 *
 	 * @throws NonExistentPostException When a Post with the specified ID is not found in the list of reported posts.
 	 **/
